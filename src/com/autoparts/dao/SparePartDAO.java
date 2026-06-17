@@ -90,4 +90,27 @@ public class SparePartDAO implements BaseDAO<SparePart> {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Advanced Search for parts by name or category.
+     */
+    public List<SparePart> search(String query) {
+        List<SparePart> parts = new ArrayList<>();
+        String sql = "SELECT * FROM spare_parts WHERE name LIKE ? OR category LIKE ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setString(2, "%" + query + "%");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                SparePart part = new SparePart(rs.getInt("part_id"), rs.getString("name"), 
+                                             rs.getDouble("price"), rs.getInt("stock_quantity"));
+                part.setCategory(rs.getString("category"));
+                parts.add(part);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return parts;
+    }
 }
