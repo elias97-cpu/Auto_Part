@@ -12,18 +12,25 @@ import java.util.Scanner;
 public class ConsoleUI {
     private Scanner scanner = new Scanner(System.in);
     private SparePartDAO partDAO = new SparePartDAO();
+    private UserDAO userDAO = new UserDAO();
 
     public void start() {
         while (true) {
             System.out.println("\n=== Welcome to Auto Parts Link Ethiopia ===");
             System.out.println("1. Login");
-            System.out.println("2. Exit");
+            System.out.println("2. Signup (Customer)");
+            System.out.println("3. Signup (Admin)");
+            System.out.println("4. Exit");
             System.out.print("Choice: ");
             
             if (!scanner.hasNextInt()) break;
             int choice = scanner.nextInt();
             if (choice == 1) {
                 login();
+            } else if (choice == 2) {
+                signup("CUSTOMER");
+            } else if (choice == 3) {
+                signup("ADMIN");
             } else {
                 System.out.println("Goodbye!");
                 break;
@@ -32,17 +39,43 @@ public class ConsoleUI {
     }
 
     private void login() {
+        System.out.println("\n--- Login ---");
         System.out.print("Username: ");
         String username = scanner.next();
         System.out.print("Password: ");
         String password = scanner.next();
 
-        // Demonstration Login logic
-        if (username.equalsIgnoreCase("admin")) {
-            showAdminDashboard(new Admin(1, "admin", "admin@autoparts.com"));
+        User user = userDAO.authenticate(username, password);
+        if (user != null) {
+            System.out.println("Login Successful! Welcome, " + user.getUsername());
+            if (user instanceof Admin) {
+                showAdminDashboard((Admin) user);
+            } else {
+                showCustomerDashboard((Customer) user);
+            }
         } else {
-            showCustomerDashboard(new Customer(2, username, username + "@example.com"));
+            System.out.println("Error: Invalid username or password.");
         }
+    }
+
+    private void signup(String role) {
+        System.out.println("\n--- Signup as " + role + " ---");
+        System.out.print("Username: ");
+        String username = scanner.next();
+        System.out.print("Password: ");
+        String password = scanner.next();
+        System.out.print("Email: ");
+        String email = scanner.next();
+
+        User newUser;
+        if ("ADMIN".equals(role)) {
+            newUser = new Admin(0, username, email);
+        } else {
+            newUser = new Customer(0, username, email);
+        }
+        newUser.setPassword(password);
+        userDAO.add(newUser);
+        System.out.println(role + " account created successfully!");
     }
 
     private void showAdminDashboard(Admin admin) {

@@ -58,7 +58,42 @@ The system utilizes a MySQL database consisting of six primary tables:
 - GetUserOrderSummary: Aggregates order history and metrics for specific users.
 
 ## Installation and Execution
-1. Database Setup: Execute the script located in db/schema.sql on your MySQL server.
-2. Dependencies: Ensure the MySQL Connector/J driver is included in your project classpath.
-3. Compilation: Compile all source files using the Java compiler.
-4. Execution: Run the com.autoparts.Main class to start the application.
+
+### Prerequisites
+1. Java Development Kit (JDK) 8 or higher installed on your system.
+2. MySQL Server installed and running.
+3. MySQL Connector/J driver (JAR file) for database connectivity.
+
+### Step 1: Database Setup
+1. Log in to your MySQL terminal or use a GUI like MySQL Workbench.
+2. Run the SQL script located in the `db/` folder:
+   ```sql
+   source Desktop/Auto_Part/db/schema.sql;
+   ```
+   This will create the `auto_parts_db` database and all necessary tables.
+
+### Step 2: Configure Database Connection
+1. Open the file `src/com/autoparts/dao/DatabaseConnection.java`.
+2. Update the `USER` and `PASSWORD` constants with your MySQL credentials.
+
+### Step 3: Compilation
+1. Open your terminal or command prompt.
+2. Navigate to the project root directory:
+   ```bash
+   cd Desktop/Auto_Part
+   ```
+3. Compile all source files into a `bin` directory (include the MySQL connector JAR in your classpath):
+   ```bash
+   javac -d bin -cp ".;path/to/mysql-connector-java.jar" src/com/autoparts/*.java src/com/autoparts/model/*.java src/com/autoparts/dao/*.java src/com/autoparts/ui/*.java
+   ```
+
+### Step 4: Execution
+1. Run the application:
+   ```bash
+   java -cp "bin;path/to/mysql-connector-java.jar" com.autoparts.Main
+   ```
+
+### Application Usage
+- On startup, choose **Signup** (Option 2 or 3) to create your first User or Admin account.
+- Once registered, use **Login** (Option 1) to access the role-specific dashboard.
+- Admins can manage the catalog, while Customers can browse available spare parts.
